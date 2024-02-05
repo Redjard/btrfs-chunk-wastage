@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/env python3
 
 # ensure root
 import os
@@ -38,6 +38,7 @@ started = 0
 for bin, size, bar, count in zip( bins, sizes, bars, counts ):
     if not size and not started:
         continue
+    started = 1
     
     print(f"{bin[0]*100:.3f}% | {'█'*(bar//2)}{'▌'*(bar%2)}\t {btrfs.utils.pretty_size(size)} ({count})")
 
