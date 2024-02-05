@@ -1,5 +1,10 @@
 #!/usr/bin/env python3
 
+import argparse
+parser = argparse.ArgumentParser(description='Print a Histogram of how much space is wasted in total per Btrfs chunk utilization')
+parser.add_argument('path', metavar='path', type=str, default="/", nargs='?', help='Pth to the filesystem (defaults to /)')
+path = parser.parse_args().path
+
 # ensure root
 import os
 if os.getuid() != 0:
@@ -8,7 +13,7 @@ if os.getuid() != 0:
 
 import btrfs
 
-fs = btrfs.FileSystem('/')
+fs = btrfs.FileSystem(path)
 
 bg = lambda chunk: fs.block_group(chunk.vaddr, chunk.length)
 
@@ -40,6 +45,6 @@ for bin, size, bar, count in zip( bins, sizes, bars, counts ):
         continue
     started = 1
     
-    print(f"{bin[0]*100:.3f}% | {'█'*(bar//2)}{'▌'*(bar%2)}\t {btrfs.utils.pretty_size(size)} ({count})")
+    print(f"{bin[0]*100:6.3f}% | {'█'*(bar//2)}{'▌'*(bar%2)}\t {btrfs.utils.pretty_size(size)} ({count})")
 
 print(f"Total savable {btrfs.utils.pretty_size((len(ratios)-sum(ratios))*1024**3)}")
